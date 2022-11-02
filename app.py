@@ -3,16 +3,21 @@ from flask import Flask
 app = Flask(__name__)
 
 @app.route('/')
-def hello_world():
+@app.route('/home')
+def home():
     return "Hello world!"
 
-@app.route('/<name>')
-def greet_user(name):
-    return f"Hello {name}! How are you doing?"
+@app.route('/about')
+def about():
+    return "The about page"
 
-@app.route('/post/<int:id>')
-def post_id(id):
-    return f"This post has an ID of {id}"
+@app.route('/contact')
+def contact():
+    return "The contact page"
 
+@app.route('/protected')
+def protected():
+    return "The protected page"
+    
 if __name__ == "__main__":
     app.run(debug=True)
