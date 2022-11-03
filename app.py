@@ -1,6 +1,8 @@
-from flask import Flask, render_template, url_for
+from flask import Flask, render_template, url_for, redirect, request, flash
 
 app = Flask(__name__)
+
+app.config["SECRET_KEY"] = 'c6a3989cca843a8f5e986a067c8971cd3179fb8b7e40a1adb8a927a55cdeea2e'
 
 posts = [
     {
@@ -33,6 +35,15 @@ def contact():
 @app.route('/protected')
 def protected():
     return "The protected page"
+
+@app.route('/login')
+def login():
+    return render_template('login.html', title='Login')
+
+
+@app.route('/register')
+def register():
+    return render_template('register.html', title='Register')
 
 if __name__ == "__main__":
     app.run(debug=True)
