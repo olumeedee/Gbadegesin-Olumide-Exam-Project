@@ -1,8 +1,21 @@
-from flask import Flask, render_template, url_for, redirect, request, flash
+from flask import Flask, flash, render_template, url_for, request, redirect
+from flask_sqlalchemy import SQLAlchemy
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import current_user, login_user, logout_user, login_required, LoginManager, UserMixin
+from datetime import datetime
+import os
+
+base_dir = os.path.dirname(os.path.realpath(__file__))
 
 app = Flask(__name__)
 
+
+app.config["SQLALCHEMY_DATABASE_URI"]='sqlite:///' + os.path.join(base_dir,'Blog.db')
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SECRET_KEY"] = 'c6a3989cca843a8f5e986a067c8971cd3179fb8b7e40a1adb8a927a55cdeea2e'
+
+db = SQLAlchemy(app)
+login_manager = LoginManager(app)
 
 posts = [
     {
@@ -36,8 +49,17 @@ def contact():
 def protected():
     return "The protected page"
 
-@app.route('/login')
+@app.route('/login', methods=['GET', 'POST'])
 def login():
+    username = request.form.get('username')
+    password = request.form.get('password')
+
+    user = User.query.filter_by(username=username).first()
+
+    if user and check_password_hash(user.password_hash, password):
+        login_user(user)
+        flash("You are now logged in.")
+        return redirect(url_for('index'))
     return render_template('login.html', title='Login')
 
 
