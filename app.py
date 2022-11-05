@@ -17,6 +17,38 @@ app.config["SECRET_KEY"] = 'c6a3989cca843a8f5e986a067c8971cd3179fb8b7e40a1adb8a9
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 
+
+class User(db.Model, UserMixin):
+    id = db.Column(db.Integer(), primary_key=True)
+    username = db.Column(db.String(255), nullable=False, unique=True)
+    first_name = db.Column(db.String(255), nullable=False)
+    last_name = db.Column(db.String(255), nullable=False)
+    email = db.Column(db.String(255), nullable=False, unique=True)
+    password_hash = db.Column(db.Text(), nullable=False)
+    posts = db.relationship('Post', backref='author', lazy=True)
+
+    def __repr__(self):
+        return f"User <{self.username}>"
+
+class Post(db.Model):
+    id = db.Column(db.Integer(), primary_key=True)
+    title = db.Column(db.String(255), nullable=False)
+    date_posted = db.Column(db.DateTime(), nullable=False, default=datetime.utcnow)
+    content = db.Column(db.Text(), nullable=False)
+    author_id = db.Column(db.Integer(), db.ForeignKey('user.id'), nullable=False)
+
+    def __repr__(self):
+        return f"Post <{self.title}, {self.date_posted}>"
+
+
+@login_manager.user_loader
+def user_loader(id):
+    return User.query.get(int(id))
+
+@app.before_request
+def create_tables():
+    db.create_all()
+
 posts = [
     {
         'author': 'Olumide Gbadegesin',
