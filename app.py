@@ -59,25 +59,13 @@ def user_loader(id):
 def create_tables():
     db.create_all()
 
-posts = [
-    {
-        'author': 'Olumide Gbadegesin',
-        'title': 'Blog Post 1',
-        'content': 'First post content',
-        'date_posted': 'November 2, 2022'
-    },
-    {
-        'author': 'Bruce Wayne',
-        'title': 'Blog Post 2',
-        'content': 'Second post content',
-        'date_posted': 'November 2, 2022'
-    }
-]
+
+
 
 @app.route('/')
 @app.route('/home')
 def home():
-    posts = Post.query.all()
+    posts = Post.query.order_by(Post.date_posted.desc()).all()
     return render_template('index.html', posts=posts)
 
 @app.route('/about')
