@@ -25,19 +25,41 @@
             <span class="navbar-toggler-icon"></span>
           </button>
           <div class="collapse navbar-collapse" id="navbarToggle">
+            {% if current_user.is_authenticated %}
             <div class="navbar-nav mr-auto">
-              <a class="nav-item nav-link" href="/">Home</a>
-              <a class="nav-item nav-link" href="/about">About</a>
-              <a class="nav-item nav-link" href="/contact">Contact</a>
+              <a class="nav-item nav-link" href="{{url_for('home')}}">Home</a>
+              <a class="nav-item nav-link" href="{{url_for('about')}}">About</a>
+              <a class="nav-item nav-link" href="{{url_for('new_post')}}">Create Post</a>
             </div>
             <!-- Navbar Right Side -->
             <div class="navbar-nav">
-              <a class="nav-item nav-link" href="/login">Login</a>
-              <a class="nav-item nav-link" href="/register">Register</a>
+              <a class="nav-item nav-link" href="{{url_for('contact')}}">Contact Us</a>
+              <a class="nav-item nav-link" href="{{url_for('logout')}}">Logout</a>
             </div>
+            {% else %}
+            <div class="navbar-nav mr-auto">
+              <a class="nav-item nav-link" href="{{url_for('home')}}">Home</a>
+              <a class="nav-item nav-link" href="{{url_for('about')}}">About</a>
+              <a class="nav-item nav-link" href="{{url_for('contact')}}">Contact Us</a>
+            </div>
+            <!-- Navbar Right Side -->
+            <div class="navbar-nav">
+              <a class="nav-item nav-link" href="{{url_for('login')}}">Login</a>
+              <a class="nav-item nav-link" href="{{url_for('register')}}">Register</a>
+            </div>
+            {% endif %}
+
+            
           </div>
         </div>
       </nav>
+      {% for message in get_flashed_messages() %}
+		  <div class="alert alert-success alert-dismissible fade show" role="alert">
+			{{ message }}
+		  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+		  </div>
+	    {% endfor %}
+
     </header>
     <main role="main" class="container">
       <div class="row">

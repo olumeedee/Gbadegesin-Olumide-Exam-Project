@@ -1,4 +1,4 @@
-from flask import Flask, flash, render_template, url_for, request, redirect
+from flask import Flask, flash, render_template, url_for, request, redirect, abort
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import current_user, login_user, logout_user, login_required, LoginManager, UserMixin
@@ -41,6 +41,15 @@ class Post(db.Model):
     def __repr__(self):
         return f"Post <{self.title}, {self.date_posted}>"
 
+class Message(db.Model):
+    id = db.Column(db.Integer(), primary_key=True)
+    name = db.Column(db.String(255), nullable=False)
+    email = db.Column(db.String(255), nullable=False)
+    title = db.Column(db.String(255), nullable=False)
+    message = db.Column(db.Text(), nullable=False)
+
+    def __repr__(self):
+        return f"Message <{self.name}, {self.email}>"
 
 @login_manager.user_loader
 def user_loader(id):
@@ -68,6 +77,7 @@ posts = [
 @app.route('/')
 @app.route('/home')
 def home():
+    posts = Post.query.all()
     return render_template('index.html', posts=posts)
 
 @app.route('/about')
@@ -76,6 +86,16 @@ def about():
 
 @app.route('/contact')
 def contact():
+    if request.method == 'POST':
+        name = request.form.get('name')
+        email = request.form.get('email')
+        title = request.form.get('title')
+        message = request.form.get('message')
+        new_message = Message(name=name, email=email, title=title, message=message)
+        db.session.add(new_message)
+        db.session.commit()
+        flash('Your message has been sent. Thank you!', 'success')
+        return redirect(url_for('contact'))
     return render_template('contact.html', title='Contact Me')
 
 @app.route('/protected')
@@ -139,6 +159,59 @@ def register():
             flash('Account created successfully.', category='success')
             return redirect(url_for('login'))
     return render_template('register.html', title='Register')
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash('Logged out successfully.', category='success')
+    return redirect(url_for('home'))
+
+@app.route('/post/new', methods=['GET', 'POST'])
+@login_required
+def new_post():
+    if request.method == 'POST':
+        title = request.form.get('title')
+        content = request.form.get('content')
+        author = current_user
+        new_post = Post(title=title, content=content, author=author)
+        db.session.add(new_post)
+        db.session.commit()
+        flash('Post created successfully.', category='success')
+        return redirect(url_for('home'))
+    return render_template('create_post.html', title='New Post')
+
+@app.route('/post/<int:post_id>')
+def post(post_id):
+    post = Post.query.get_or_404(post_id)
+    return render_template('post.html', title=post.title, post=post)
+
+@app.route('/post/<int:post_id>/update', methods=['GET', 'POST'])
+@login_required
+def update_post(post_id):
+    post = Post.query.get_or_404(post_id)
+    if post.author != current_user:
+        abort(403)
+    if request.method == 'POST':
+        post.title = request.form.get('title')
+        post.content = request.form.get('content')
+        db.session.commit()
+        flash('Post updated successfully.', category='success')
+        return redirect(url_for('post', post_id=post.id))
+    return render_template('create_post.html', title='Update Post', legend='Update Post',  post=post)
+
+@app.route('/post/<int:post_id>/delete', methods=['POST'])
+@login_required
+def delete_post(post_id):
+    post = Post.query.get_or_404(post_id)
+    if post.author != current_user:
+        abort(403)
+    db.session.delete(post)
+    db.session.commit()
+    flash('Post deleted successfully.', category='success')
+    return redirect(url_for('home'))
+
+
 
 if __name__ == "__main__":
     app.run(debug=True)
