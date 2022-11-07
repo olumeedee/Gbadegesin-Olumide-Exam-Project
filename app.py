@@ -72,7 +72,7 @@ def home():
 def about():
     return render_template('about.html', title='About')
 
-@app.route('/contact')
+@app.route('/contact', methods=['GET', 'POST'])
 def contact():
     if request.method == 'POST':
         name = request.form.get('name')
@@ -86,9 +86,9 @@ def contact():
         return redirect(url_for('contact'))
     return render_template('contact.html', title='Contact Me')
 
-@app.route('/protected')
-def protected():
-    return "The protected page"
+# @app.route('/protected')
+# def protected():
+#     return "The protected page"
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
