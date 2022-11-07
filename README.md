@@ -5,12 +5,7 @@
 <div align="center">
 
   [![Contributors][contributors-shield]][contributors-url]
-  [![Forks][forks-shield]][forks-url]
-  [![Stargazers][stars-shield]][stars-url]
-  [![Issues][issues-shield]][issues-url]
-  [![MIT License][license-shield]][license-url]
-  [![Twitter][twitter-shield]][twitter-url]
-</div>
+
 
 <!-- Project Logo -->
 
@@ -173,6 +168,7 @@ This project was made possible by:
 * [Othneil Drew's README Template](https://github.com/othneildrew/Best-README-Template)
 * [Ileriayo's Markdown Badges](https://github.com/Ileriayo/markdown-badges)
 * [Stack Overflow](https://stackoverflow.com/)
+* [Youtube tutorials ](https://youtube.com/)
 
 <p align="right"><a href="#readme-top">back to top</a></p>
 
