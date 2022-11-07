@@ -1,3 +1,4 @@
+# Package imports 
 from flask import Flask, flash, render_template, url_for, request, redirect, abort
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -9,7 +10,7 @@ base_dir = os.path.dirname(os.path.realpath(__file__))
 
 app = Flask(__name__)
 
-
+# App configurations
 app.config["SQLALCHEMY_DATABASE_URI"]='sqlite:///' + os.path.join(base_dir,'Blog2.db')
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SECRET_KEY"] = 'c6a3989cca843a8f5e986a067c8971cd3179fb8b7e40a1adb8a927a55cdeea2e'
@@ -18,7 +19,7 @@ db = SQLAlchemy(app)
 # db.init_app(app) 
 login_manager = LoginManager(app)
 
-
+# Creating the database models
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer(), primary_key=True)
     username = db.Column(db.String(255), nullable=False, unique=True)
@@ -51,17 +52,18 @@ class Message(db.Model):
     def __repr__(self):
         return f"Message <{self.name}, {self.email}>"
 
+# Using login manager to get current user
 @login_manager.user_loader
 def user_loader(id):
     return User.query.get(int(id))
 
+# Initialising db tables 
 @app.before_request
 def create_tables():
     db.create_all()
 
 
-
-
+# Creating the routing functions for our pages 
 @app.route('/')
 @app.route('/home')
 def home():
