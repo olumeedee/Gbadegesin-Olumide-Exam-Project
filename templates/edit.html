@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
     
-    <form action="{{url_for('new_post')}}" method="POST">
+    <form action="{{ url_for('update_post', post_id=post.id) }}" method="POST">
         <fieldset class="form-group">
             <legend class="border-bottom mb-4">Update Post</legend>
             <div class="form-group">
